@@ -1,4 +1,5 @@
 #include "catch.hpp"
+
 #include "timedrel/zone.hpp"
 #include "timedrel/utils.hpp"
 
@@ -21,6 +22,15 @@ TEST_CASE( "Construction" ) {
         auto z2 = zone<int>::make({0,3,3,6,3,4});
 
         CHECK( z1 == z2 );
+
+    }
+
+    SECTION( "Universal" ) {
+
+        auto z1 = zone<int>::universal();
+        auto z2 = zone<int>::make({0,1000000000,0,1000000000,0,1000000000});
+
+        CHECK( zone<int>::includes(z1, z2) );
 
     }
 
@@ -91,14 +101,14 @@ TEST_CASE( "Inclusion" ) {
 
 }
 
-TEST_CASE( "Intersection" ) {
+TEST_CASE( "intersectionion" ) {
 
     SECTION( "Simple" ) {
 
         auto z1 = zone<int>::make({0,6,0,6,0,6});
         auto z2 = zone<int>::make({3,9,3,9,0,6});
 
-        auto result = zone<int>::intersect(z1,z2);
+        auto result = zone<int>::intersection(z1,z2);
         auto expected = zone<int>::make({3,6,3,6,0,3});
 
         CHECK( result == expected );
@@ -110,7 +120,7 @@ TEST_CASE( "Intersection" ) {
         auto z1 = zone<int>::make({0,3,3,6,0,6});
         auto z2 = zone<int>::make({3,6,3,6,0,3});
 
-        auto result = zone<int>::intersect(z1,z2);
+        auto result = zone<int>::intersection(z1,z2);
 
         CHECK( !result.is_nonempty() );
 
@@ -118,13 +128,13 @@ TEST_CASE( "Intersection" ) {
 
 }
 
-TEST_CASE( "Duration Constraints" ) {
+TEST_CASE( "Duration Restriction" ) {
 
     SECTION( "Simple" ) {
 
         auto z1 = zone<int>::make({0,6,0,6,0,6});
 
-        auto result = zone<int>::constrain(z1, 3, 4);
+        auto result = zone<int>::duration_restriction(z1, 3, 4);
         auto expected = zone<int>::make({0,3,3,6,3,4});
 
         CHECK( result == expected );
@@ -140,7 +150,7 @@ TEST_CASE( "Concatenation" ) {
         auto z1 = zone<int>::make({0,6,0,6,0,6});
         auto z2 = zone<int>::make({6,9,6,9,0,3});
 
-        auto result = zone<int>::concatenate(z1,z2);
+        auto result = zone<int>::concatenation(z1,z2);
         auto expected = zone<int>::make({0,6,6,9,0,9});
 
         CHECK( result == expected );
@@ -152,7 +162,7 @@ TEST_CASE( "Concatenation" ) {
         auto z1 = zone<int>::make({0,3,0,3,1,2});
         auto z2 = zone<int>::make({2,7,2,7,1,2});
 
-        auto result = zone<int>::concatenate(z1,z2);
+        auto result = zone<int>::concatenation(z1,z2);
         auto expected = zone<int>::make({0,6,6,9,2,4});
 
         // CHECK( result == expected );
@@ -164,7 +174,7 @@ TEST_CASE( "Concatenation" ) {
     //     auto z1 = zone<int>::make_unique({0,3,3,6,0,6});
     //     auto z2 = zone<int>::make_unique({3,6,3,6,1,2});
 
-    //     auto result = intersect(z1,z2);
+    //     auto result = intersection(z1,z2);
 
     //     CHECK( is_empty(result) );
 

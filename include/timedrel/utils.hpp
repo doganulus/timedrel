@@ -10,17 +10,24 @@
 namespace timedrel {
 
 template <typename T>
-inline std::ostream& operator<< (std::ostream &os, const bound<T>& b) {
-    os << b.value << (b.sign ? '|' : ':');
+inline std::ostream& operator<< (std::ostream &os, const lower_bound<T>& b) {
+    os << b.value << (b.sign ? " <=" : " <");
     return os;
 }
 
 template <typename T>
+inline std::ostream& operator<< (std::ostream &os, const upper_bound<T>& b) {
+    os << (b.sign ? "<= " : "< ") << b.value ;
+    return os;
+}
+
+
+template <typename T>
 inline std::ostream& operator<< (std::ostream &os, const zone<T>& z) {
 
-    os << z.get_bmin() <<' '<< z.get_bmax() <<' '<<
-          z.get_emin() <<' '<< z.get_emax() <<' '<<
-          z.get_dmin() <<' '<< z.get_dmax();
+    os << z.get_bmin() <<" b "<< z.get_bmax() <<", "<<
+          z.get_emin() <<" e "<< z.get_emax() <<", "<<
+          z.get_dmin() <<" d "<< z.get_dmax();
 
     return os;
 }

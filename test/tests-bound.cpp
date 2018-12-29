@@ -1,4 +1,5 @@
 #include "catch.hpp"
+
 #include "timedrel/bound.hpp"
 #include "timedrel/utils.hpp"
 
@@ -94,7 +95,7 @@ TEST_CASE( "Tightness" ) {
         auto b1 = lower_bound<int>::closed(3);
         auto b2 = lower_bound<int>::open(4);
 
-        CHECK( lower_bound<int>::intersect(b1,b2) == b2);
+        CHECK( lower_bound<int>::intersection(b1,b2) == b2);
     }
 
 }
@@ -139,6 +140,47 @@ TEST_CASE( "Addition" ) {
         auto b3 = upper_bound<int>::open(4);
 
         CHECK( b1 < b2 ); CHECK( b2 < b3 );
+    }
+
+}
+
+TEST_CASE( "Complementation" ) {
+
+    SECTION( "LOW2UP1" ) {
+
+        auto b1 = lower_bound<int>::closed(3);
+
+        auto expected = upper_bound<int>::open(3);
+
+        CHECK( b1.complement() == expected);
+    }
+
+
+    SECTION( "LOW2UP2" ) {
+
+        auto b1 = lower_bound<int>::open(3);
+
+        auto expected = upper_bound<int>::closed(3);
+
+        CHECK( b1.complement() == expected);
+    }
+
+    SECTION( "UP2LOW1" ) {
+
+        auto b1 = upper_bound<int>::closed(3);
+
+        auto expected = lower_bound<int>::open(3);
+
+        CHECK( b1.complement() == expected);
+    }
+
+    SECTION( "UP2LOW2" ) {
+
+        auto b1 = upper_bound<int>::open(3);
+
+        auto expected = lower_bound<int>::closed(3);
+
+        CHECK( b1.complement() == expected);
     }
 
 }

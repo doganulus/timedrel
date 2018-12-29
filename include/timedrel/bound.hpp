@@ -32,6 +32,8 @@ friend std::ostream& operator<<(std::ostream &os, const bound<T1>&);
      * need to add two numbers in several operations.
      */
     constexpr static T infinity = (std::numeric_limits<T>::has_infinity) ? std::numeric_limits<T>::infinity() : std::numeric_limits<T>::max()/2;
+    constexpr static T minus_infinity = (std::numeric_limits<T>::has_infinity) ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::max()/2;
+
     
     constexpr static T zero = 0;
 
@@ -71,7 +73,7 @@ template <class T>
 struct lower_bound : bound<T>{
 
     typedef T              value_type;
-    typedef lower_bound<T> bound_type;
+    typedef lower_bound<T> type;
 
     typedef lower_bound<T> lower_bound_type;
     typedef upper_bound<T> upper_bound_type;
@@ -104,6 +106,10 @@ struct lower_bound : bound<T>{
         }
     }
 
+    upper_bound_type complement(){
+        return lower_bound_type::complementation(*this);
+    }
+
     static bool includes (const lower_bound_type& b1, const lower_bound_type& b2){
         if(b1.value < b2.value){
             return true;
@@ -114,7 +120,9 @@ struct lower_bound : bound<T>{
         }   
     }
 
-    static lower_bound_type intersect (const lower_bound_type& b1, const lower_bound_type& b2){
+
+
+    static lower_bound_type intersection (const lower_bound_type& b1, const lower_bound_type& b2){
         if(b1.value < b2.value){
             return b2;
         } else if (b1.value == b2.value and b1.sign >= b2.sign){
@@ -135,11 +143,17 @@ struct lower_bound : bound<T>{
         return lower_bound_type(b2.value - b1.value, b1.sign && b2.sign);    
     }
 
+    static upper_bound_type complementation(const lower_bound_type& b1){
+        return upper_bound_type(b1.value, not b1.sign);
+    }
+
     static lower_bound_type strict(T v){ return lower_bound_type(v, false);}
     static lower_bound_type nonstrict(T v){ return lower_bound_type(v, true);}
     
     static lower_bound_type open(T v){ return lower_bound_type(v, false);}
     static lower_bound_type closed(T v){ return lower_bound_type(v, true);}
+
+    static lower_bound_type unbounded(){ return lower_bound_type(type::minus_infinity, false);}
 
 };
 
@@ -147,7 +161,7 @@ template <class T>
 struct upper_bound : public bound<T> {
 
     typedef T              value_type;
-    typedef upper_bound<T> bound_type;
+    typedef upper_bound<T> type;
 
     typedef lower_bound<T> lower_bound_type;
     typedef upper_bound<T> upper_bound_type;
@@ -177,6 +191,10 @@ struct upper_bound : public bound<T> {
         }
     }
 
+    lower_bound_type complement(){
+        return upper_bound_type::complementation(*this);
+    }
+
     /* 
      *  Non-strict inclusion order 
      *  e.g. (x >= 3) includes (x > 4)
@@ -193,7 +211,7 @@ struct upper_bound : public bound<T> {
         }
     }
 
-    static upper_bound_type intersect (const upper_bound_type& b1, const upper_bound_type& b2){
+    static upper_bound_type intersection (const upper_bound_type& b1, const upper_bound_type& b2){
         if(b1.value > b2.value){
             return b2;
         } else if (b1.value == b2.value and b1.sign >= b2.sign){
@@ -213,11 +231,17 @@ struct upper_bound : public bound<T> {
         return upper_bound_type(b1.value - b2.value, b1.sign && b2.sign);    
     }
 
+    static lower_bound_type complementation(const upper_bound_type& b1){
+        return lower_bound_type(b1.value, not b1.sign);
+    }
+
     static upper_bound_type strict(T v){ return upper_bound_type(v, false);}
     static upper_bound_type nonstrict(T v){ return upper_bound_type(v, true);}
 
     static upper_bound_type open(T v){ return upper_bound_type(v, false);}
     static upper_bound_type closed(T v){ return upper_bound_type(v, true);}
+
+    static upper_bound_type unbounded(){ return upper_bound_type(type::infinity, false);}
 
 };
 
